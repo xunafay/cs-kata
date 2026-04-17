@@ -7,9 +7,9 @@ namespace BeeSpeed.Console.Objects;
 public enum Priority
 {
     [JsonStringEnumMemberName("Hoog")]
-    High,
+    High = 2,
     [JsonStringEnumMemberName("Normaal")]
-    Normal,
+    Normal = 1,
     [JsonStringEnumMemberName("Laag")]
-    Low,
+    Low = 0,
 }

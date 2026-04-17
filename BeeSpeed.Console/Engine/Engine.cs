@@ -62,9 +62,10 @@ public class Engine : IEngine
             var resources = Resources
                 .Where(r => r.Skills.Contains(task.RequiredSkill))
                 .Where(r => r.AvailableFrom <= task.Deadline.AddMinutes(-task.DurationMinutes))
-                .Where(r => r.MaxWorkMinutes >= task.DurationMinutes) // TODO: modify MaxWorkMinutes
-                .OrderByDescending(r => r.MaxWorkMinutes).ThenBy(r => r.Skills.Count());
+                .Where(r => r.MaxWorkMinutes >= task.DurationMinutes)
+                .OrderBy(r => r.Skills.Count()).ThenByDescending(r => r.MaxWorkMinutes);
 
+            var found = false;
             foreach (var resource in resources)
             {
                 var slot = FindFirstAvailableSlot(resource, task.DurationMinutes);
@@ -72,9 +73,14 @@ public class Engine : IEngine
                 {
                     Results = Results.Append(new BarryResult(task, resource, slot.Value));
                     resource.MaxWorkMinutes -= task.DurationMinutes;
-
+                    found = true;
                     break;
                 }
+            }
+
+            if (!found)
+            {
+                System.Console.WriteLine($"Could not find a slot for task {task.Id}");
             }
         }
 

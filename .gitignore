@@ -3,7 +3,7 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-result.json
+result*.json
 
 # dotenv files
 .env
