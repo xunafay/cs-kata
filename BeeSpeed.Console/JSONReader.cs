@@ -8,7 +8,7 @@ public class JSONReader
 {
     public Setup GetSetup()
     {
-        var stream = File.OpenRead("../../../setup.json");
+        var stream = File.OpenRead("./BeeSpeed.Console/setup.json");
 
         var options = new JsonSerializerOptions
         {

@@ -1,43 +1,21 @@
+using BeeSpeed.Console.Objects;
+
 namespace BeeSpeed.Console.Engine;
-
-public enum Priority
-{
-    Low = 0,
-    Normal = 1,
-    High = 2
-}
-
-public interface ITask
-{
-    public Priority Priority { get; }
-    public string RequiredSkill { get; }
-    public TimeOnly Deadline { get; }
-    public int DurationMinutes { get; }
-}
-
-public interface IResource
-{
-    public IEnumerable<string> Skills { get; }
-    public TimeOnly AvailableFrom { get; }
-    public TimeOnly AvailableUntil { get; }
-    public int MaxWorkMinutes { get; set; }
-    public string Id { get; }
-}
 
 public interface IResult
 {
-    public ITask Task { get; }
-    public IResource Resource { get; }
+    public BarryTask Task { get; }
+    public Resource Resource { get; }
     public TimeOnly Start { get; }
 }
 
-public class Result : IResult
+public class BarryResult : IResult
 {
-    public ITask Task { get; }
-    public IResource Resource { get; }
+    public BarryTask Task { get; }
+    public Resource Resource { get; }
     public TimeOnly Start { get; }
 
-    public Result(ITask task, IResource resource, TimeOnly start)
+    public BarryResult(BarryTask task, Resource resource, TimeOnly start)
     {
         Task = task;
         Resource = resource;
@@ -47,16 +25,16 @@ public class Result : IResult
 
 public class Engine : IEngine
 {
-    public IEnumerable<ITask> Tasks { get; set; }
-    public IEnumerable<IResource> Resources { get; set; }
+    public IEnumerable<BarryTask> Tasks { get; set; }
+    public IEnumerable<Resource> Resources { get; set; }
 
-    public DateTime Start { get; }
-    public DateTime End { get; }
+    public TimeOnly Start { get; }
+    public TimeOnly End { get; }
 
     public IEnumerable<IResult> Results { get; set; } = [];
 
 
-    public Engine(IEnumerable<ITask> tasks, IEnumerable<IResource> resources, DateTime start, DateTime end)
+    public Engine(IEnumerable<BarryTask> tasks, IEnumerable<Resource> resources, TimeOnly start, TimeOnly end)
     {
         Tasks = tasks;
         Resources = resources;
@@ -71,7 +49,7 @@ public class Engine : IEngine
         {
             var resources = Resources
                 .Where(r => r.Skills.Contains(task.RequiredSkill))
-                .Where(r => r.AvailableFrom <= task.Deadline.AddMinutes(-task.DurationMinutes) && r.AvailableUntil >= task.Deadline)
+                .Where(r => r.AvailableFrom <= task.Deadline.AddMinutes(-task.DurationMinutes))
                 .Where(r => r.MaxWorkMinutes >= task.DurationMinutes) // TODO: modify MaxWorkMinutes
                 .OrderByDescending(r => r.MaxWorkMinutes).ThenBy(r => r.Skills.Count());
 
@@ -80,7 +58,7 @@ public class Engine : IEngine
                 var slot = FindFirstAvailableSlot(resource, task.DurationMinutes);
                 if (slot is not null)
                 {
-                    Results = Results.Append(new Result(task, resource, slot.Value));
+                    Results = Results.Append(new BarryResult(task, resource, slot.Value));
                     resource.MaxWorkMinutes -= task.DurationMinutes;
 
                     break;
@@ -89,7 +67,7 @@ public class Engine : IEngine
         }
     }
 
-    private TimeOnly? FindFirstAvailableSlot(IResource resource, int duration)
+    private TimeOnly? FindFirstAvailableSlot(Resource resource, int duration)
     {
         var occupied = Results
             .Where(result => result.Resource.Id == resource.Id)
