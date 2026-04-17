@@ -4,9 +4,11 @@ namespace BeeSpeed.Console.Engine;
 
 public interface IResult
 {
-    public BarryTask Task { get; }
-    public Resource Resource { get; }
-    public TimeOnly Start { get; }
+    BarryTask Task { get; }
+    Resource Resource { get; }
+    TimeOnly Start { get; }
+
+    Result Map();
 }
 
 public class BarryResult : IResult
@@ -20,6 +22,16 @@ public class BarryResult : IResult
         Task = task;
         Resource = resource;
         Start = start;
+    }
+
+    public Result Map()
+    {
+        return new Result
+        {
+            ResourceId = Resource.Id,
+            TaskId = Task.Id,
+            Time = Start
+        };
     }
 }
 
@@ -42,7 +54,7 @@ public class Engine : IEngine
         End = end;
     }
 
-    public void Run()
+    public IEnumerable<Result> Run()
     {
         Tasks = Tasks.OrderByDescending(task => task.Priority).ThenBy(task => task.Deadline);
         foreach (var task in Tasks)
@@ -65,6 +77,8 @@ public class Engine : IEngine
                 }
             }
         }
+
+        return Results.Select(r => r.Map());
     }
 
     private TimeOnly? FindFirstAvailableSlot(Resource resource, int duration)

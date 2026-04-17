@@ -1,6 +1,8 @@
+using BeeSpeed.Console.Objects;
+
 namespace BeeSpeed.Console.Engine;
 
 public interface IEngine
 {
-    void Run();
+    IEnumerable<Result> Run();
 }

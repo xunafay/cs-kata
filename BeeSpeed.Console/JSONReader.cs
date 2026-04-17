@@ -19,5 +19,8 @@ public class JSONReader
     }
 
     public string SerializeResult(ResultList results)
-        => JsonSerializer.Serialize(results);
+        => JsonSerializer.Serialize(results, new JsonSerializerOptions()
+        {
+            WriteIndented = true,
+        });
 }
