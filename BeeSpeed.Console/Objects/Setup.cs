@@ -7,7 +7,7 @@ public class Setup
     [JsonPropertyName("day")]
     public Day Day { get; set; }
     [JsonPropertyName("tasks")]
-    public IEnumerable<Task> Tasks { get; set; }
+    public IEnumerable<BarryTask> Tasks { get; set; }
     [JsonPropertyName("resources")]
     public IEnumerable<Resource> Resources { get; set; }
 }

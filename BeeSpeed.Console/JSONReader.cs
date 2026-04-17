@@ -18,10 +18,6 @@ public class JSONReader
         return setup;
     }
 
-    public void SerializeResult(IEnumerable<Result> results)
-    {
-        var stream = File.OpenWrite("../../../result.json");
-
-        JsonSerializer.Serialize(stream, results);
-    }
+    public string SerializeResult(ResultList results)
+        => JsonSerializer.Serialize(results);
 }

@@ -2,7 +2,7 @@
 
 namespace BeeSpeed.Console.Objects;
 
-public class Task
+public class BarryTask
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }
